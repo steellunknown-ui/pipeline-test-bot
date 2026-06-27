@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   });
 
   const result = streamText({
-    model: openrouter('meta-llama/llama-3-8b-instruct:free'), // using a free openrouter model for testing
+    model: openrouter('qwen/qwen3-next-80b-a3b-instruct:free'), // using the requested free model
     messages,
   });
 
