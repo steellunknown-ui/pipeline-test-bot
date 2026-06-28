@@ -5,19 +5,30 @@ import { streamText } from 'ai';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const { messages } = await req.json();
 
-  // Create an OpenAI client configured for OpenRouter
-  // Vercel deployment will automatically inject OPENROUTER_API_KEY from the Deployment Engine!
-  const openrouter = createOpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY, 
-  });
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error("OPENROUTER_API_KEY environment variable is missing.");
+    }
 
-  const result = streamText({
-    model: openrouter('qwen/qwen3-next-80b-a3b-instruct:free'), // using the requested free model
-    messages,
-  });
+    // Create an OpenAI client configured for OpenRouter
+    const openrouter = createOpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY, 
+    });
 
-  return result.toTextStreamResponse();
+    const result = streamText({
+      model: openrouter('qwen/qwen3-next-80b-a3b-instruct:free'),
+      messages,
+    });
+
+    return result.toTextStreamResponse();
+  } catch (error: any) {
+    console.error("API Chat Error:", error);
+    return new Response(
+      error.message || "An unknown error occurred in the chat API",
+      { status: 500 }
+    );
+  }
 }

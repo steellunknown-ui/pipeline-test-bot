@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, sendMessage, error } = useChat();
+  const { messages, sendMessage, error, status } = useChat();
   const [input, setInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const isSubmitting = status === 'submitted' || status === 'streaming';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -16,15 +17,11 @@ export default function Chat() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isSubmitting) return;
-    setIsSubmitting(true);
     sendMessage({ parts: [{ type: 'text', text: input }], role: 'user' });
     setInput('');
   };
 
   useEffect(() => {
-    if (messages.length > 0) {
-      setIsSubmitting(false);
-    }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
