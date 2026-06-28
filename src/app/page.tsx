@@ -4,13 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, sendMessage, error, status } = useChat({
-    fetch: async (url, options) => {
-      // Force credentials to be sent so Vercel Authentication cookies are included!
-      return fetch(url, { ...options, credentials: 'include' });
-    }
-  });
-  
+  const { messages, sendMessage, error, status } = useChat();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
