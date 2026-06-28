@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     });
 
     const result = streamText({
-      model: openrouter('qwen/qwen3-next-80b-a3b-instruct:free'),
+      model: openrouter('openai/gpt-oss-120b:free'),
       messages,
     });
 
