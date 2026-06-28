@@ -1,9 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const { messages, sendMessage } = useChat();
+  const [input, setInput] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    sendMessage({ parts: [{ type: 'text', text: input }], role: 'user' });
+    setInput('');
+  };
 
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch h-screen">
@@ -11,7 +24,7 @@ export default function Chat() {
         {messages.map(m => (
           <div key={m.id} className="whitespace-pre-wrap mb-4">
             <span className="font-bold">{m.role === 'user' ? 'User: ' : 'AI: '}</span>
-            {m.content}
+            {m.parts ? m.parts.map((p, i) => p.type === 'text' ? <span key={i}>{p.text}</span> : null) : null}
           </div>
         ))}
       </div>
